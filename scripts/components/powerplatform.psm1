@@ -30,7 +30,9 @@ class PowerPlatform {
 
         $url = [Uri]"$loginURL/$tenantId/oauth2/token?api-version=1.0"
 
-        return (Invoke-RestMethod -Method Post -Uri $url -Body $body).access_token
+        $result = (Invoke-RestMethod -Method Post -Uri $url -Body $body)
+
+        return $result.access_token
     }
 
     ImportConnector($config, [string] $accessToken, [string]$swagger) {

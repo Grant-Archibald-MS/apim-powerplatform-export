@@ -49,9 +49,9 @@ class APIM {
             Write-Host "Searching for API"
             $apis = (az apim api list --resource-group Azure-APIM-Management-Test --service-name $serviceName | ConvertFrom-Json)
 
-            $match = $apis | Where-Object { $_.name -eq $config.apiToExport }
+            $match = $apis.Where({ $_.name -eq $config.apiToExport })
 
-            if ($match.length -eq 1) {
+            if ($match.count -eq 1) {
                 Write-Host "Found api"
 
                 $token = (az account get-access-token --resource="https://management.azure.com" --query accessToken --output tsv)
@@ -70,10 +70,15 @@ class APIM {
 
                 return $swagger
 
+            } else {
+                $apiName = $config.apiToExport
+                $apiCount = $apis.count
+                Write-Host $match | ConvertTo-Json
+                Write-Host "Unable to find api $apiName from api with $apiCount apis"
             }
         } else {
             $apiCount = $apim.count 
-            Write-Host "Found $apiCount APIM instances, searhing for single"
+            Write-Host "Found $apiCount APIM instances, searching for single"
         }
         return ""
     }

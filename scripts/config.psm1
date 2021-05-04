@@ -25,7 +25,8 @@ class Config {
 
     [Config] LoadJson([string] $json) {
         if ( $json.length -eq 0) {
-            return [Config]::new()
+            $data =  [Config]::new() | ConvertTo-Json
+            return  ( ([System.Environment]::ExpandEnvironmentVariables($data) -replace "\%(.*?)\%", "") | ConvertFrom-Json)
         }
 
         $rawConfig = ( ([System.Environment]::ExpandEnvironmentVariables($json) -replace "\%(.*?)\%", "") | ConvertFrom-Json)

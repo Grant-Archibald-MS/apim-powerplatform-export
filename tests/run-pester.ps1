@@ -1,0 +1,1 @@
+Invoke-Pester  -OutputFormat NUnitXml -OutputFile TEST-RESULTS.xml

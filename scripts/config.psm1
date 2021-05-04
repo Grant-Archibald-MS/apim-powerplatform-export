@@ -20,7 +20,10 @@ class Config {
          '"Expected Usage"="Unknown time"')
 
     [Config] Load() {
-        return $this.LoadJson( (Get-Content 'config.json' | Out-String))
+        if (Test-Path -Path 'config.json' -PathType leaf) {
+            return $this.LoadJson( (Get-Content 'config.json' | Out-String))    
+        }
+        return $this.LoadJson( "" ) 
     }
 
     [Config] LoadJson([string] $json) {

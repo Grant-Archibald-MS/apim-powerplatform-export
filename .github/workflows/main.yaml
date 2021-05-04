@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Perform a Pester test
+      shell: pwsh
+      run: |
+        Invoke-Pester 
     - run: |
         cd scripts
         zip -r ../apim-export-release.zip .

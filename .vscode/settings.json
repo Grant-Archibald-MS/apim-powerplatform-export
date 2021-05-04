@@ -1,0 +1,7 @@
+{
+    "spellchecker.ignoreWordsList": [
+        "APIs",
+        "Dataverse",
+        "O365"
+    ]
+}

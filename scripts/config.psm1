@@ -40,36 +40,38 @@ class Config {
         if (-not ($NULL -eq $configProperties) -and $configProperties.Count -gt 0)
         {
             foreach ($property in $configProperties) {
-                $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name
-                $property = $config.GetType().GetProperty($property.Name)
-                $existingValue = ""
+                if(Get-Member -inputobject $rawConfig -name $property.Name -Membertype Properties) {
+                    $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name
+                    $property = $config.GetType().GetProperty($property.Name)
+                    $existingValue = ""
 
-                switch ($property.PropertyType.ToString()) {
-                    "System.String" {
-                        $existingValue = $property.GetValue($config, $NULL) 
-                        $existingValue = ([System.Environment]::ExpandEnvironmentVariables($existingValue))
-                        $property.SetValue($config, $existingValue, $NULL)
-                        $existingValue = $property.GetValue($config, $NULL) -replace "\%(.*?)\%", ""
-                        $property.SetValue($config, $existingValue, $NULL)
+                    switch ($property.PropertyType.ToString()) {
+                        "System.String" {
+                            $existingValue = $property.GetValue($config, $NULL) 
+                            $existingValue = ([System.Environment]::ExpandEnvironmentVariables($existingValue))
+                            $property.SetValue($config, $existingValue, $NULL)
+                            $existingValue = $property.GetValue($config, $NULL) -replace "\%(.*?)\%", ""
+                            $property.SetValue($config, $existingValue, $NULL)
+                        }
                     }
-                }
-              
-                if ($NULL -eq $rawValue -or  ($existingValue.length -gt 0 -and $rawValue.length -eq 0)) {
-                    continue
-                }
                 
-                switch ($property.PropertyType.ToString()) {
-                    "System.String" {
-                        $property.SetValue($config, $rawValue, $NULL)
+                    if ($NULL -eq $rawValue -or  ($existingValue.length -gt 0 -and $rawValue.length -eq 0)) {
+                        continue
                     }
-                    "System.String[]" {
-                        $stringArray = [string[]] $rawValue
-                        $property.SetValue($config, $stringArray, $NULL)
-                    }
-                    "System.Boolean" {
-                        $out = $NULL
-                        if ([bool]::TryParse($rawValue, [ref]$out)) {
-                            $property.SetValue($config, $out, $NULL)
+                    
+                    switch ($property.PropertyType.ToString()) {
+                        "System.String" {
+                            $property.SetValue($config, $rawValue, $NULL)
+                        }
+                        "System.String[]" {
+                            $stringArray = [string[]] $rawValue
+                            $property.SetValue($config, $stringArray, $NULL)
+                        }
+                        "System.Boolean" {
+                            $out = $NULL
+                            if ([bool]::TryParse($rawValue, [ref]$out)) {
+                                $property.SetValue($config, $out, $NULL)
+                            }
                         }
                     }
                 }

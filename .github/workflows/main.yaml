@@ -13,6 +13,8 @@ jobs:
     - name: Perform a Pester test
       shell: pwsh
       run: |
+        apt-get install ca-certificates curl apt-transport-https lsb-release gnupg
+        curl -sL https://aka.ms/InstallAzureCLIDeb | bash
         Invoke-Pester 
     - run: |
         cd scripts

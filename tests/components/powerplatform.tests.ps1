@@ -45,7 +45,9 @@ Describe "Power Platform Tests" {
             $urls.count | Should -Be 1
             $urls[0] | Should -Be "https://login.windows.net/GUID1/oauth2/token?api-version=1.0"
             $invokeCommands.count | Should -Be 1
-            $invokeCommands[0] | Should -Be '{"resource":"https://test.crm.dynamics.com","grant_type":"client_credentials","client_id":"GUID2","client_secret":"SECRET"}'            
+
+            $expectedJson = '{"resource":"https://test.crm.dynamics.com","grant_type":"client_credentials","client_id":"GUID2","client_secret":"SECRET"}' | ConvertFrom-Json | ConvertTo-Json -Compress
+            Compare-Object -ReferenceObject ($invokeCommands[0] | ConvertFrom-Json) -DifferenceObject ( $expectedJson | ConvertFrom-Json)
         }
     }
 
@@ -72,7 +74,8 @@ Describe "Power Platform Tests" {
             # Assert
             $urls[0] | Should -Be "https://test.crm.dynamics.com/api/data/v9.0/connectors"
 
-            $invokeCommands[0] | ConvertFrom-Json | ConvertTo-Json -compress | Should -Be '{"name":"new_5Ftestapi","openapidefinition":"{\"info\":{\"title\":\"Test API\"}}","displayname":"TestAPI","connectortype":1}'
+            $expectedJson = '{"name":"new_5Ftestapi","openapidefinition":"{\"info\":{\"title\":\"Test API\"}}","displayname":"TestAPI","connectortype":1}' | ConvertFrom-Json | ConvertTo-Json -Compress
+            Compare-Object -ReferenceObject ($invokeCommands[0] | ConvertFrom-Json) -DifferenceObject ( $expectedJson | ConvertFrom-Json)
         }
     }
 }

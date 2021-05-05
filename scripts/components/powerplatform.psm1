@@ -16,13 +16,20 @@
     .DESCRIPTION
         Sample script to provision Power Platform connectors
 #>
+using module '..\config.psm1'
 
 class PowerPlatform {
-    [string] Login($config) {
-        $resourceName = $config.powerPlatformEnvironment
-        $tenantId = $config.powerPlatformTenantId
-        $clientId = $config.powerPlatformClientId
-        $clientSecret = $config.powerPlatformClientSecret
+    [Config]$Config
+
+    PowerPlatform([Config] $config){
+        $this.Config = $config
+    }
+
+    [string] Login() {
+        $resourceName = $this.Config.powerPlatformEnvironment
+        $tenantId = $this.Config.powerPlatformTenantId
+        $clientId = $this.Config.powerPlatformClientId
+        $clientSecret = $this.Config
 
         $body = @{grant_type="client_credentials";resource=$resourceName;client_id=$ClientID;client_secret=$clientSecret}
         
@@ -35,7 +42,7 @@ class PowerPlatform {
         return $result.access_token
     }
 
-    ImportConnector($config, [string] $accessToken, [string]$swagger) {
+    ImportConnector([string] $accessToken, [string]$swagger) {
         $headers = @{
             "Authorization" = "Bearer $accessToken"
             "OData-Version" = "4.0"
@@ -62,7 +69,7 @@ class PowerPlatform {
 
         $Failure = $NULL
 
-        $url = $config.powerPlatformEnvironment
+        $url = $this.Config.powerPlatformEnvironment
         if ( !$url.endsWith("/") ) {
             $url += "/"
         }
@@ -76,3 +83,12 @@ class PowerPlatform {
         Write-Host $Failure
     }
 }
+
+Function New-PowerPlatformManagement {
+    Param(
+        [Config]$config
+    )
+    return [PowerPlatform]::new($config)
+}
+
+Export-ModuleMember -Function New-PowerPlatformManagement

@@ -54,7 +54,7 @@ unzip apim-export-release.zip
     "powerPlatformEnvironment": "https://TODO3.crm.dynamics.com",
     "powerPlatformTenantId": "TODO4",
     "powerPlatformClientId": "TODO5",
-    "powerPlatformClientSecret": "TODO6", 
+    "powerPlatformClientSecret": "%PP_CLIENT_SECRET%", 
     "tags": [
         "\"Workload name\"=\"Development APIM\"",
         "\"Data Classification\"=\"Non-business\"",

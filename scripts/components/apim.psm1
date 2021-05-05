@@ -83,3 +83,13 @@ class APIM {
         return ""
     }
 }
+
+Function APIM-Create {
+    Param(
+        [Config]$config
+
+    )
+    [Computer]::New($Type)
+}
+
+Export-ModuleMember -Function APIM-Create,New-Computer

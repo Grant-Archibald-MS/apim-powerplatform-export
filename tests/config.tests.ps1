@@ -19,6 +19,14 @@
 using module ..\scripts\config.psm1
 
 Describe "Config Tests" {
+    It "Import Config Json" {
+        Import-Module "$PSScriptRoot\..\scripts\config.psm1" -Force
+
+        $config = (New-Config -json "{'resourceGroup':'Foo'}")
+
+        $config.resourceGroup | Should -Be "Foo"
+    }
+
     It "Load Default Resource Group" {
         $config = [Config]::new().Load()
 
@@ -33,7 +41,7 @@ Describe "Config Tests" {
 
     It "Set Environment Value" {
         [Environment]::SetEnvironmentVariable("ACCOUNT", "Foo");
-        $config = [Config]::new().Load()
+        $config = [Config]::new().LoadJson("")
 
         $config.account | Should -Be "Foo"
     }

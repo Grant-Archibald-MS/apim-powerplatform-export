@@ -19,9 +19,12 @@ class Config {
          '"Operations Team"="None"',
          '"Expected Usage"="Unknown time"')
 
-    [Config] Load() {
-        if (Test-Path -Path 'config.json' -PathType leaf) {
-            return $this.LoadJson( (Get-Content 'config.json' | Out-String))    
+    [Config] Load([string]$file) {
+        if ( [string]::IsNullOrEmpty($file) ) {
+            $file = 'config.json'
+        }
+        if (Test-Path -Path $file -PathType leaf) {
+            return $this.LoadJson( (Get-Content $file | Out-String))    
         }
         return $this.LoadJson( "" ) 
     }
@@ -81,3 +84,22 @@ class Config {
         return $config
     }
 }
+
+Function New-Config {
+    Param(
+        [string]$file,
+        [string]$json
+    )
+
+    if ( ![string]::IsNullOrEmpty($json) ) {
+        return [Config]::new().LoadJson($json)
+    }
+
+    if ( ![string]::IsNullOrEmpty($file) ) {
+        return [Config]::new().Load($file)
+    }
+
+    return [Config]::new().Load()
+}
+
+Export-ModuleMember -Function New-Config

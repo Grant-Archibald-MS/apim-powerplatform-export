@@ -40,4 +40,4 @@ else
 Write-Host "Getting Current Resources"
 $resources = (az resource list -g $config.resourceGroup | ConvertFrom-Json)
 
-[APIM]::new().Create($resources, $config)
+[APIM]::new($config).Create($resources)

@@ -46,6 +46,22 @@ Describe "Config Tests" {
         $config.account | Should -Be "Foo"
     }
 
+    It "Set SecureString" {
+        $config = [Config]::new().LoadJson("{'powerPlatformClientSecret':'ABC'}")
+
+        $binaryString = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($config.powerPlatformClientSecret)
+        $unsecureSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($binaryString)
+        [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($binaryString)
+
+        $unsecureSecret | Should -Be "ABC"
+    }
+
+    It "Set loadFromKeyVault False" {
+        $config = [Config]::new().LoadJson("{'loadFromKeyVault':false}")
+
+        $config.loadFromKeyVault | Should -Be $FALSE
+    }
+
     It "Override Environment Value" {
         [Environment]::SetEnvironmentVariable("ACCOUNT1", "Foo1");
         $config = [Config]::new().LoadJson("{'account':'%ACCOUNT1%'}")

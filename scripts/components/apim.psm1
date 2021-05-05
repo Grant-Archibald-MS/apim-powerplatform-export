@@ -16,9 +16,16 @@
     .DESCRIPTION
         Sample script to provision Azure Azure API Management
 #>
+using module '..\config.psm1'
 
 class APIM {
-    [string] Create($resources, $config) {
+    [Config]$Config
+
+    APIM([Config] $config){
+        $this.Config = $config
+    }
+
+    [string] Create($resources) {
         $apimMatch = $resources.Where({ $_.type -eq "Microsoft.ApiManagement/service"})
 
         $apiName = ""
@@ -27,7 +34,7 @@ class APIM {
                 $name = (New-Guid).Guid.Replace("-", "").Substring(0, 23)
                 $apiName = "A${name}"
                 Write-Host "Creating API Management"
-                az apim create --name $apiName --publisher-email $config.APIMPublisherEmail --publisher-name $config.APIMPublisherName --sku-name $config.apiSku --resource-group $config.resourceGroup
+                az apim create --name $apiName --publisher-email $this.Config.APIMPublisherEmail --publisher-name $this.Config.APIMPublisherName --sku-name $this.Config.apiSku --resource-group $this.Config.resourceGroup
             }
             1 { 
                 $apiName = $apimMatch[0].name
@@ -37,19 +44,19 @@ class APIM {
         return $apiName
     }
 
-    [string] ExportSwagger($config) {
+    [string] ExportSwagger() {
         Write-Host "Searching for APIM"
         
-        $apim = (az apim list -g $config.resourceGroup | ConvertFrom-Json)
+        $apim = (az apim list -g $this.Config.resourceGroup | ConvertFrom-Json)
 
         if ( $apim.count -eq 1 ) {
             Write-Host "Found APIM"
             $serviceName = $apim[0].name
 
             Write-Host "Searching for API"
-            $apis = (az apim api list --resource-group Azure-APIM-Management-Test --service-name $serviceName | ConvertFrom-Json)
+            $apis = (az apim api list --resource-group $this.Config.resourceGroup --service-name $serviceName | ConvertFrom-Json)
 
-            $match = $apis.Where({ $_.name -eq $config.apiToExport })
+            $match = $apis.Where({ $_.name -eq $this.Config.apiToExport })
 
             if ($match.count -eq 1) {
                 Write-Host "Found api"
@@ -71,7 +78,7 @@ class APIM {
                 return $swagger
 
             } else {
-                $apiName = $config.apiToExport
+                $apiName = $this.Config.apiToExport
                 $apiCount = $apis.count
                 Write-Host $match | ConvertTo-Json
                 Write-Host "Unable to find api $apiName from api with $apiCount apis"
@@ -84,12 +91,11 @@ class APIM {
     }
 }
 
-Function APIM-Create {
+Function New-APIManagement {
     Param(
         [Config]$config
-
     )
-    [Computer]::New($Type)
+    return [APIM]::new($config)
 }
 
-Export-ModuleMember -Function APIM-Create,New-Computer
+Export-ModuleMember -Function New-APIManagement

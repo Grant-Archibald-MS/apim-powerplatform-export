@@ -3,9 +3,9 @@
 		==============================================================================================
 		Copyright(c) Microsoft Corporation. All rights reserved.
 
-		File:		resources.ps1
+		File:		export-apim.ps1
 
-		Purpose:	Configfure and deploy azure reosurces
+		Purpose:	Configure and deploy Azure APIM reosurces
 
 		Version: 	0.1.0
 		==============================================================================================
@@ -24,12 +24,10 @@ using module .\components\powerplatform.psm1
 [Console]::ResetColor()
 $config = [Config]::new().Load()
 
-$powerplatform = [PowerPlatform]::new()
+$powerplatform = [PowerPlatform]::new($config)
 
-$accessToken = $powerplatform.Login($config)
+$accessToken = $powerplatform.Login()
 
-$swagger = [APIM]::new().ExportSwagger($config)
+$swagger = [APIM]::new($config).ExportSwagger()
 
-$powerplatform.ImportConnector($config, $accessToken, $swagger)
-
-
+$powerplatform.ImportConnector($accessToken, $swagger)

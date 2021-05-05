@@ -24,7 +24,7 @@ Describe "APIM Tests" {
         It "Create APIM" {
             # Arrange
             $config = [Config]::new().LoadJson("{'APIMPublisherEmail':'test@microsoft.com', 'APIMPublisherName': 'Name' }")
-            $apim = [APIM]::new()
+            $apim = [APIM]::new($config)
             $resouces = @()
             $commands = New-Object System.Collections.Generic.List[System.String]
 
@@ -36,7 +36,7 @@ Describe "APIM Tests" {
             }
 
             # Act
-            $name = $apim.Create($resources, $config)
+            $name = $apim.Create($resources)
             
             # Assert
             $commands.count | Should -Be 1
@@ -47,7 +47,7 @@ Describe "APIM Tests" {
         It "Match APIM" {
             # Arrange
             $config = [Config]::new().LoadJson("")
-            $apim = [APIM]::new()
+            $apim = [APIM]::new($config)
             $resources =  ("[{'type':'Microsoft.ApiManagement/service', 'name':'api'}]" | ConvertFrom-Json)
             $commands = New-Object System.Collections.Generic.List[System.String]
 
@@ -59,7 +59,7 @@ Describe "APIM Tests" {
             }
 
             # Act
-            $name = $apim.Create($resources, $config)
+            $name = $apim.Create($resources)
             
             # Assert
             $commands.count | Should -Be 0
@@ -71,7 +71,7 @@ Describe "APIM Tests" {
         It "No APIM" {
             # Arrange
             $config = [Config]::new().LoadJson("")
-            $apim = [APIM]::new()
+            $apim = [APIM]::new($config)
             $commands = New-Object System.Collections.Generic.List[System.String]
 
             Mock az { 
@@ -86,7 +86,7 @@ Describe "APIM Tests" {
             }
 
             # Act
-            $swagger = $apim.ExportSwagger($config)
+            $swagger = $apim.ExportSwagger()
             
             # Assert
             $swagger | Should -Be ""
@@ -94,8 +94,8 @@ Describe "APIM Tests" {
 
         It "APIM and API Found" {
             # Arrange
-            $config = [Config]::new().LoadJson("{'apiToExport': 'test'}")
-            $apim = [APIM]::new()
+            $config = [Config]::new().LoadJson("{'resourceGroup':'Foo', 'apiToExport': 'test'}")
+            $apim = [APIM]::new($config)
             $commands = New-Object System.Collections.Generic.List[System.String]
             $invokeCommands = New-Object System.Collections.Generic.List[System.String]
 
@@ -141,17 +141,18 @@ Describe "APIM Tests" {
             }
 
             # Act
-            $swagger = $apim.ExportSwagger($config)
+            $swagger = $apim.ExportSwagger()
             
             # Assert
             $config.apiToExport | Should -Be "test"
             $swagger | Should -Be "CONTENT"
+            $commands.Where( { $_.IndexOf("apim api list --resource-group Foo --service-name APIM") -ge 0 }).count | Should -Be 1
         }
 
         It "APIM Match and API Not Found" {
             # Arrange
             $config = [Config]::new().LoadJson("{'apiToExport': 'test'}")
-            $apim = [APIM]::new()
+            $apim = [APIM]::new($config)
             $commands = New-Object System.Collections.Generic.List[System.String]
             $invokeCommands = New-Object System.Collections.Generic.List[System.String]
 
@@ -171,7 +172,7 @@ Describe "APIM Tests" {
             }
 
             # Act
-            $swagger = $apim.ExportSwagger($config)
+            $swagger = $apim.ExportSwagger()
             
             # Assert
             $config.apiToExport | Should -Be "test"
@@ -182,7 +183,7 @@ Describe "APIM Tests" {
         It "Multiple APIM Found" {
             # Arrange
             $config = [Config]::new().LoadJson("{'apiToExport': 'test'}")
-            $apim = [APIM]::new()
+            $apim = [APIM]::new($config)
             $commands = New-Object System.Collections.Generic.List[System.String]
             $invokeCommands = New-Object System.Collections.Generic.List[System.String]
 
@@ -198,7 +199,7 @@ Describe "APIM Tests" {
             }
 
             # Act
-            $swagger = $apim.ExportSwagger($config)
+            $swagger = $apim.ExportSwagger()
             
             # Assert
             $swagger | Should -Be ""

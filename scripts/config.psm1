@@ -1,3 +1,22 @@
+<#
+	.NOTES
+		==============================================================================================
+		Copyright(c) Microsoft Corporation. All rights reserved.
+
+		File:		config.ps1
+
+		Purpose:	Get configuration settings for components
+
+		Version: 	0.1.0
+		==============================================================================================
+
+	.SYNOPSIS
+        Read configuration values from config file, environmeny
+        
+    .DESCRIPTION
+        Strongly type Powershell class that defines common configuration setttings used by modules
+#>
+
 class Config {
     [string]$account = "%ACCOUNT%"
     [string]$resourceGroup = "Azure-APIM-Management-Test"
@@ -9,7 +28,8 @@ class Config {
     [string]$powerPlatformEnvironment = "%POWER_PLATFORM_ENVIRONMENT%"
     [string]$powerPlatformTenantId = "%POWER_PLATFORM_TENANT_ID%"
     [string]$powerPlatformClientId = "%POWER_PLATFORM_CLIENT_ID%"
-    [string]$powerPlatformClientSecret = "%POWER_PLATFORM_CLIENT_SECRET%"
+    [SecureString]$powerPlatformClientSecret
+    [bool]$loadFromKeyVault = $TRUE
 
     [string[]]$tags = @('"Workload name"="Development APIM"',
          '"Data Classification"="Non-business"',
@@ -19,6 +39,16 @@ class Config {
          '"Operations Team"="None"',
          '"Expected Usage"="Unknown time"')
 
+    [Config] Load() {
+        return $this.Load("")
+    }
+
+    <#
+    .Description
+    Load configuration from file
+    .PARAMETER file
+    The name of the file to read from. If empty will read from config.json
+    #>
     [Config] Load([string]$file) {
         if ( [string]::IsNullOrEmpty($file) ) {
             $file = 'config.json'
@@ -29,6 +59,14 @@ class Config {
         return $this.LoadJson( "" ) 
     }
 
+     <#
+    .Description
+    Load configuration from json string
+    .PARAMETER json
+    The json object to read from
+    .NOTES
+    Supports expansion of environment variables using %NAME% syntax
+    #>
     [Config] LoadJson([string] $json) {
         if ( $json.length -eq 0) {
             $data =  [Config]::new() | ConvertTo-Json
@@ -63,6 +101,10 @@ class Config {
                     }
                     
                     switch ($property.PropertyType.ToString()) {
+                        "System.Security.SecureString" {
+                            $newValue = (ConvertTo-SecureString $rawValue -AsPlainText -Force)
+                            $property.SetValue($config, $newValue, $NULL)
+                        }
                         "System.String" {
                             $property.SetValue($config, $rawValue, $NULL)
                         }
@@ -81,25 +123,45 @@ class Config {
             }
         }
 
+        if ($config.loadFromKeyVault) {
+            # TODO
+        }
+
         return $config
     }
 }
 
+ <#
+    .Description
+    Creates a new configuraion object instance
+    .PARAMETER file
+    The json file to read config from
+    .PARAMETER json
+    The json object to read settings from
+    .PARAMETER resourceGroup
+    The resource group to read configuration from
+    .PARAMETER keyVaultName
+    The keyvault name to read settings from
+#>
 Function New-Config {
     Param(
         [string]$file,
         [string]$json
     )
 
+    $config = [Config]::new()
+
     if ( ![string]::IsNullOrEmpty($json) ) {
-        return [Config]::new().LoadJson($json)
+        $config = $config.LoadJson($json)
+    } else {
+        if ( ![string]::IsNullOrEmpty($file) ) {
+            $config = $config.Load($file)
+        } else {
+            $config = $config.Load()
+        }
     }
-
-    if ( ![string]::IsNullOrEmpty($file) ) {
-        return [Config]::new().Load($file)
-    }
-
-    return [Config]::new().Load()
+    
+    return $config
 }
 
 Export-ModuleMember -Function New-Config

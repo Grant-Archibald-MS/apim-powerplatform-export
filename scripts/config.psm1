@@ -120,7 +120,7 @@ class Config {
                             $property.SetValue($config, $stringArray, $NULL)
                         }
                         "System.Boolean" {
-                            $out = $NULL
+                            $out = $False
                             if ([bool]::TryParse($rawValue, [ref]$out)) {
                                 $property.SetValue($config, $out, $NULL)
                             }

@@ -101,7 +101,7 @@ Describe "KeyVault Tests" {
             # Arrange
             $config = [Config]::new().LoadJson("")
             $kv = [KeyVault]::new($config)
-            $resources =  ("[{'type':'Microsoft.KeyVault/vaults', 'name':'kv'}]" | ConvertFrom-Json)
+            [Object[]] $resources =  ("[{'type':'Microsoft.KeyVault/vaults', 'name':'kv'}]" | ConvertFrom-Json)
             $commands = New-Object System.Collections.Generic.List[System.String]
 
             Mock az { 

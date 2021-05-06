@@ -57,7 +57,7 @@ Describe "Config Tests" {
     }
 
     It "Set loadFromKeyVault False" {
-        $config = [Config]::new().LoadJson("{'loadFromKeyVault':false}")
+        $config = [Config]::new().LoadJson("{'loadFromKeyVault':'false'}")
 
         $config.loadFromKeyVault | Should -Be $FALSE
     }

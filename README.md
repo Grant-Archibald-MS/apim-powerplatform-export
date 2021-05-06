@@ -7,7 +7,7 @@ This repository expands on [Export APIs from Azure API Management to the Power P
 2. [Export of API between different Azure Active Directory Tenants](#export-api-between-different-azure-active-directory-tenants)
 
 3. [Sample](#sample) Provides sample scripts that can automate the end to end process of automating the deployment of an API from Azure to the Power Platform.
-
+   - [Setup and Deploy Release Scripts](#setup-and-deploy-release-scripts)
    - [Provisioning Azure Resources](#provisioning-azure-resources)
    - [Configure Azure API](#configure-azure-api)
    - [Deploy your API to power platform](#deploy-your-api-to-power-platform)
@@ -36,6 +36,8 @@ Developer subscription (E5) benefits
 If scenarios like this apply to you then when you look to publish your API to your Power Apps environment then you will receive an empty list. to work around this gap you can use the [Sample](#sample) section below 
 
 ## Sample
+
+### Setup and Deploy Release Scripts
 
 To run this sample download the latest [release](https://github.com/Grant-Archibald-MS/apim-powerplatform-export/releases) from GitHub. Upload the apim-export-release.zip to [https://shell.azure.com](https://shell.azure.com) or Azure Cloud Shell in [https://portal.azure.com](https://portal.azure.com).
 
@@ -77,7 +79,7 @@ In [https://shell.azure.com](https://shell.azure.com) or Azure Cloud Shell of [h
 
 ### Configure Azure API
 
-TODO: To be updated include Azure Function included
+TODO: To be updated include Azure Function example into APIM
 
 ### Deploy your API to power platform
 
@@ -108,7 +110,7 @@ To run this sample you will need access to or the following components installed
 
 1. System administrator rights in Power Platform Environment
 2. Access to [https://shell.azure.com](https://shell.azure.com) or Azure Portal [https://portal.azure.com](https://portal.azure.com) 
-3. Local install of PowerShell (verion 5.0 of greater) and Azure CLI
+3. Local install of PowerShell (verion 5.0 or greater) and Azure CLI
 
 ### O356 License Context
 

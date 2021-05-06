@@ -71,6 +71,29 @@ unzip apim-export-release.zip
 }
 ```
 
+3. The following example builds on the previous example by loading values from Azure Key Vault
+
+```json
+{
+    "APIMPublisherEmail": "TODO",
+    "APIMPublisherName": "TODO2",
+    "powerPlatformEnvironment": "https://TODO3.crm.dynamics.com",
+    "powerPlatformTenantId": "TODO4",
+    "powerPlatformClientId": "TODO5",
+    "loadFromKeyVault": true,
+    "powerPlatformClientSecretKey": "%PP_CLIENT_SECRET%", 
+    "tags": [
+        "\"Workload name\"=\"Development APIM\"",
+        "\"Data Classification\"=\"Non-business\"",
+        "\"Business criticality\"=\"Low\"",
+        "\"Business Unit\"=\"Unknown\"",
+        "\"Operations commitment\"=\"Baseline Only\"",
+        "\"Operations Team\"=\"None\"",
+        "\"Expected Usage\"=\"Unknown time\""
+    ]
+}
+```
+
 ### Provisioning Azure Resources
 
 In [https://shell.azure.com](https://shell.azure.com) or Azure Cloud Shell of [https://portal.azure.com](https://portal.azure.com) choosing powershell script environment

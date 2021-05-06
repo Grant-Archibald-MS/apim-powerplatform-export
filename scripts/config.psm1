@@ -97,6 +97,7 @@ class Config {
             foreach ($property in $configProperties) {
                 if(Get-Member -inputobject $rawConfig -name $property.Name -Membertype Properties) {
                     $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name
+                    
                     $property = $config.GetType().GetProperty($property.Name)
                     $existingValue = ""
 
@@ -150,12 +151,17 @@ class Config {
                     try {
                         $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name
                     } catch {
-                        
+
                     }
 
                     switch ($property.PropertyType.ToString()) {
                         "System.Security.SecureString" {
-                            $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name                           
+                            try {
+                                $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name                           
+                            } catch {
+
+                            }
+           
                             if ($NULL -eq $rawValue) {
                                 $rawValue = $config | Select-Object -ExpandProperty ($property.Name + "Key")
                             }

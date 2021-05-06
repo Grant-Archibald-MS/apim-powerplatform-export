@@ -146,8 +146,13 @@ class Config {
                 $keyVaultExists = -not ( $NULL -eq $keyInstance )
 
                 foreach ($property in $configProperties) {
-                    $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name
-                    
+                    $rawValue = $NULL
+                    try {
+                        $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name
+                    } catch {
+                        
+                    }
+
                     switch ($property.PropertyType.ToString()) {
                         "System.Security.SecureString" {
                             $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name                           

@@ -3,7 +3,7 @@
 		==============================================================================================
 		Copyright(c) Microsoft Corporation. All rights reserved.
 
-		File:		config.Tests.ps1
+		File:		config.tests.ps1
 
 		Purpose:	Pester - PowerShell Tests
 
@@ -60,6 +60,14 @@ Describe "Config Tests" {
         $config = [Config]::new().LoadJson("{'loadFromKeyVault':false}")
 
         $config.loadFromKeyVault | Should -Be $FALSE
+    }
+
+    It "Key Vault config resource" {
+        $config = [Config]::new().LoadJson("{'keyVault':{id:'1',name:'2','resourceGroup':'3'}}")
+
+        $config.keyVault.id | Should -Be "1"
+        $config.keyVault.name | Should -Be "2"
+        $config.keyVault.resourceGroup | Should -Be "3"
     }
 
     It "Override Environment Value" {

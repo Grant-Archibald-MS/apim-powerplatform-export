@@ -3,7 +3,7 @@
 		==============================================================================================
 		Copyright(c) Microsoft Corporation. All rights reserved.
 
-		File:		config.Tests.ps1
+		File:		apim.tests.ps1
 
 		Purpose:	Pester - PowerShell Tests
 
@@ -11,7 +11,7 @@
 		==============================================================================================
 
 	.SYNOPSIS
-		This script contains functionality used to test Config class
+		This script contains functionality used to test APIM class
 
 	.DESCRIPTION
 #>
@@ -40,7 +40,7 @@ Describe "APIM Tests" {
             
             # Assert
             $commands.count | Should -Be 1
-            $commands.Where( { $_.IndexOf("--publisher-email test@microsoft.com --publisher-name Name --sku-name Developer --resource-group Azure-APIM-Management-Test")} ).count | Should -Be 1
+            $commands.Where( { $_.IndexOf("--publisher-email test@microsoft.com --publisher-name Name --sku-name Developer --resource-group Azure-APIM-Management-Test") -ge 0 } ).count | Should -Be 1
             $name.StartsWith("A") | Should -Be True
         }
 

@@ -17,6 +17,12 @@
         Strongly type Powershell class that defines common configuration setttings used by modules
 #>
 
+class ConfigResource {
+    [string]$resourceGroup = ""
+    [string]$id = ""
+    [string]$name = ""
+}
+
 class Config {
     [string]$account = "%ACCOUNT%"
     [string]$resourceGroup = "Azure-APIM-Management-Test"
@@ -30,6 +36,7 @@ class Config {
     [string]$powerPlatformClientId = "%POWER_PLATFORM_CLIENT_ID%"
     [SecureString]$powerPlatformClientSecret
     [bool]$loadFromKeyVault = $TRUE
+    [ConfigResource]$keyVault = $NULL
 
     [string[]]$tags = @('"Workload name"="Development APIM"',
          '"Data Classification"="Non-business"',
@@ -117,6 +124,9 @@ class Config {
                             if ([bool]::TryParse($rawValue, [ref]$out)) {
                                 $property.SetValue($config, $out, $NULL)
                             }
+                        }
+                        "ConfigResource" {
+                            $property.SetValue($config, [ConfigResource]$rawValue, $NULL)
                         }
                     }
                 }

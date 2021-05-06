@@ -100,6 +100,14 @@ You can use the sample scripts above to include them in your build process
 
 ## Notes
 
+## Dependencies
+
+To run this sample you will need access to or the following components installed
+
+1. System administrator rights in Power Platform Environment
+2. Access to [https://shell.azure.com](https://shell.azure.com) or Azure Portal [https://portal.azure.com](https://portal.azure.com) 
+3. Local install of PowerShell (verion 5.0 of greater) and Azure CLI
+
 ### O356 License Context
 
 As at April 2021 as covered in [Licensing overview for Microsoft Power Platform](https://docs.microsoft.com/en-us/power-platform/admin/pricing-billing-skus) Power Apps include limited use rights included with Office 365 licenses to Export Azure API Management APIs to the Power platform.
@@ -109,3 +117,44 @@ This feature enable Customers to publish their Azure backend service as APIs and
 ### Fusion Development Teams
 
 You can use this feature as a first step to help integrate the concept of building fusion development teams including business, development and IT teams to build a solution. Using this base you can then expand into other premium connectors to accelerate and nurture fusion team development to build and deliver solutions in our organization.
+
+### Power Shell Automation
+
+This sample makes use of [Classes](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_classes?view=powershell-7.1) to encapsulate related functionality. This approach allows functionality to be managed and combined to automate the process.
+
+Each class can be created using a exported PowerShell Module functions to allow easy creation of classes via Import Module. For example to create an Azure Key Vault using the default configuration
+
+```
+Import-Module './scripts/config.psm1' -Force
+Import-Module './scripts/components/keyvault.psm1' -Force
+$config = New-Config
+$kv = New-KeyVaultManagement -config $config
+$kv.CreateIfNotExists()
+```
+
+### Configuration Management
+
+The [config.psm](./scripts/config.psm1) can be updated using following approaches:
+
+1. Json configuration file e.g. 
+
+```
+Import-Module './scripts/config.psm1' -Force
+$config = New-Config -file 'scripts/config.json'
+```
+
+2. String json parameter e.g.
+
+```
+Import-Module './scripts/config.psm1' -Force
+$config = New-Config -json '{"resourceGroup":"Delete Me"}'
+```
+
+3. Using Environment variables
+
+```
+Import-Module './scripts/config.psm1' -Force
+$env:AZ_RESOURCE_GROUP="Delete Me"
+$config = New-Config -json '{"resourceGroup":"%AZ_RESOURCE_GROUP%"}'
+$config.resourceGroup
+```

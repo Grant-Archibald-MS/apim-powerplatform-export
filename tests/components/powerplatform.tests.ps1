@@ -3,7 +3,7 @@
 		==============================================================================================
 		Copyright(c) Microsoft Corporation. All rights reserved.
 
-		File:		config.Tests.ps1
+		File:		powerplatform.tests.ps1
 
 		Purpose:	Pester - PowerShell Tests
 
@@ -11,7 +11,7 @@
 		==============================================================================================
 
 	.SYNOPSIS
-		This script contains functionality used to test Config class
+		This script contains functionality used to test PowerPlatform class
 
 	.DESCRIPTION
 #>

@@ -35,7 +35,8 @@ class Config {
     [string]$powerPlatformTenantId = "%POWER_PLATFORM_TENANT_ID%"
     [string]$powerPlatformClientId = "%POWER_PLATFORM_CLIENT_ID%"
     [SecureString]$powerPlatformClientSecret
-    [bool]$loadFromKeyVault = $TRUE
+    [string]$powerPlatformClientSecretKey = "KV_PP-CLIENT-SECRET"
+    [bool]$loadFromKeyVault = $FALSE
     [ConfigResource]$keyVault = $NULL
 
     [string[]]$tags = @('"Workload name"="Development APIM"',
@@ -84,6 +85,12 @@ class Config {
 
         $config = [Config]::new()
 
+        $kv = $NULL
+        $keyInstance = $NULL
+        $keyVaultExists = $FALSE
+
+       
+
         $configProperties = $config.GetType().GetProperties()
         if (-not ($NULL -eq $configProperties) -and $configProperties.Count -gt 0)
         {
@@ -131,11 +138,38 @@ class Config {
                     }
                 }
             }
+
+            if ($config.loadFromKeyVault) {
+                Import-Module "$PSScriptRoot\components\keyvault.psm1"
+                $kv = New-KeyVaultManagement -config ($config | ConvertTo-Json | ConvertFrom-Json)
+                $keyInstance = $kv.Exists()
+                $keyVaultExists = -not ( $NULL -eq $keyInstance )
+
+                foreach ($property in $configProperties) {
+                    $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name
+                    
+                    switch ($property.PropertyType.ToString()) {
+                        "System.Security.SecureString" {
+                            $rawValue = $rawConfig | Select-Object -ExpandProperty $property.Name                           
+                            if ($NULL -eq $rawValue) {
+                                $rawValue = $config | Select-Object -ExpandProperty ($property.Name + "Key")
+                            }
+
+                            if ($NULL -eq $rawValue) {
+                                continue
+                            }
+
+                            if ($rawValue.StartsWith("KV_")) {
+                                $newValue = $kv.GetSecureSecret($keyInstance, $rawValue.Replace("KV_",""))
+                                $property.SetValue($config, $newValue, $NULL)
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        if ($config.loadFromKeyVault) {
-            # TODO
-        }
+       
 
         return $config
     }

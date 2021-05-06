@@ -29,9 +29,12 @@ class PowerPlatform {
         $resourceName = $this.Config.powerPlatformEnvironment
         $tenantId = $this.Config.powerPlatformTenantId
         $clientId = $this.Config.powerPlatformClientId
-        $clientSecret = $this.Config
 
-        $body = @{grant_type="client_credentials";resource=$resourceName;client_id=$ClientID;client_secret=$clientSecret}
+        $binaryString = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($this.Config.powerPlatformClientSecret)
+        $unsecureSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($binaryString)
+        [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($binaryString)
+
+        $body = @{grant_type="client_credentials";resource=$resourceName;client_id=$ClientID;client_secret=$unsecureSecret}
         
         $loginURL = 'https://login.windows.net'
 

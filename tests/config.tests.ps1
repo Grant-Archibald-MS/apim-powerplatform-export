@@ -62,6 +62,39 @@ Describe "Config Tests" {
         $config.loadFromKeyVault | Should -Be $FALSE
     }
 
+    It "Load secret from KeyVault" {
+        # Arrange
+        $commands = New-Object System.Collections.Generic.List[System.String]
+
+        Mock az { 
+            param($p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,$p13,$p14)
+            $command = "$p1 $p2 $p3 $p4 $p5 $p6 $p7 $p8 $p9 $p10 $p11 $p12 $p13 $p14"
+            $commands.Add($command)
+
+            if ("$p1 $p2 $p3 $p4" -eq "resource list --resource-group A") {
+                return "[{'id':'1','name':'kv','resourceGroup':'A','type':'Microsoft.KeyVault/vaults'}]"
+            }
+
+            if ("$p1 $p2 $p3 $p4 $p5 $p6 $p7" -eq "keyvault secret show --name TEST --vault-name kv") {
+                return """VALUE"""
+            }
+           
+            return "[]"
+        }
+
+        # Act
+        $config = [Config]::new().LoadJson("{'resourceGroup':'A', 'loadFromKeyVault':'true', 'powerPlatformClientSecretKey':'KV_TEST'}")
+
+        # Assert
+        $config.loadFromKeyVault | Should -Be $TRUE
+
+        $binaryString = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($config.powerPlatformClientSecret)
+        $unsecureSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($binaryString)
+        [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($binaryString)
+
+        $unsecureSecret | Should -be "VALUE"
+    }
+
     It "Key Vault config resource" {
         $config = [Config]::new().LoadJson("{'keyVault':{id:'1',name:'2','resourceGroup':'3'}}")
 

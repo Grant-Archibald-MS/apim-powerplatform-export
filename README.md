@@ -16,6 +16,8 @@ This repository expands on [Export APIs from Azure API Management to the Power P
 4. [Notes](#notes)
     - [O365 User License Context](#o365-licence-context)
     - [Fusion Development Teams](#fusion-development-teams)
+    - [PowerShell Automation](#powershell-automation)
+    - [Configuration Management](#configuration-management)
 
 ## Why Is This Important
 
@@ -41,13 +43,13 @@ Once uploaded perform thew following steps
 
 1. unzip the release.zip
 
-```
+```bash
 unzip apim-export-release.zip
 ```
 
 2. Change config.json to include your settings replacing TODO values with your settings
 
-```
+```json
 {
     "APIMPublisherEmail": "TODO",
     "APIMPublisherName": "TODO2",
@@ -118,13 +120,13 @@ This feature enable Customers to publish their Azure backend service as APIs and
 
 You can use this feature as a first step to help integrate the concept of building fusion development teams including business, development and IT teams to build a solution. Using this base you can then expand into other premium connectors to accelerate and nurture fusion team development to build and deliver solutions in our organization.
 
-### Power Shell Automation
+### PowerShell Automation
 
 This sample makes use of [Classes](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_classes?view=powershell-7.1) to encapsulate related functionality. This approach allows functionality to be managed and combined to automate the process.
 
 Each class can be created using a exported PowerShell Module functions to allow easy creation of classes via Import Module. For example to create an Azure Key Vault using the default configuration
 
-```
+```powershell
 Import-Module './scripts/config.psm1' -Force
 Import-Module './scripts/components/keyvault.psm1' -Force
 $config = New-Config
@@ -138,21 +140,21 @@ The [config.psm](./scripts/config.psm1) can be updated using following approache
 
 1. Json configuration file e.g. 
 
-```
+```powershell
 Import-Module './scripts/config.psm1' -Force
 $config = New-Config -file 'scripts/config.json'
 ```
 
 2. String json parameter e.g.
 
-```
+```powershell
 Import-Module './scripts/config.psm1' -Force
 $config = New-Config -json '{"resourceGroup":"Delete Me"}'
 ```
 
 3. Using Environment variables
 
-```
+```powershell
 Import-Module './scripts/config.psm1' -Force
 $env:AZ_RESOURCE_GROUP="Delete Me"
 $config = New-Config -json '{"resourceGroup":"%AZ_RESOURCE_GROUP%"}'

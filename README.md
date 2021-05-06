@@ -81,7 +81,7 @@ unzip apim-export-release.zip
     "powerPlatformTenantId": "TODO4",
     "powerPlatformClientId": "TODO5",
     "loadFromKeyVault": true,
-    "powerPlatformClientSecretKey": "%PP_CLIENT_SECRET%", 
+    "powerPlatformClientSecretKey": "KV_PP-CLIENT-SECRET%", 
     "tags": [
         "\"Workload name\"=\"Development APIM\"",
         "\"Data Classification\"=\"Non-business\"",
